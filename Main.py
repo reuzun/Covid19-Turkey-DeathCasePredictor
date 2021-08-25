@@ -61,11 +61,14 @@ def gradientDescent(X, y, theta, alpha, num_iters):
     n = np.size(theta)
     J_history = []
     for i in range(num_iters):
-        tempT1 = []
-        for j in range(n):
-            tempT1.append( theta[j] - alpha/m * (np.sum( (X.dot(theta) - y) *  np.reshape(X[:, j], (m,1)) )) )
-        for j in range(n):
-            theta[j] = tempT1[j]
+        #tempT1 = []
+        #for j in range(n):
+        #    tempT1.append( theta[j] - alpha/m * (np.sum( (X.dot(theta) - y) *  np.reshape(X[:, j], (m,1)) )) )
+        #for j in range(n):
+        #    theta[j] = tempT1[j]
+        # Requires higher learning rate does same thing with above as result
+        # Above does not work with scipy.optimize while below works.
+        theta = theta - alpha/m * ((1/m) * (X.T.dot(X.dot(theta) - y)))
         J_history.append( computeCost(X, y, theta) )
     return theta, J_history
 
@@ -149,8 +152,8 @@ plt.plot(x_axis4, y_axis4, "k")
 plt.plot(date4, last40DayCases, "rx", alpha=1, markersize=11)
 
 
-alpha = 0.000005 # Learning Rate
-iterations = 400
+alpha = 0.00005 # Learning Rate
+iterations = 2000
 initial_theta = np.array([[0],[0],[0],[0]], dtype=float)
 
 # Machine-1 : Minimizes the cost due to last 40 days.
