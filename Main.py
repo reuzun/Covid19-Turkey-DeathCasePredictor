@@ -227,7 +227,10 @@ elif props["machine"] == 3:
 else:
   pass
 print("Prediction: ", mlModel(41, predictionTheta)[0])
-print("Range", mlModel(41, theta)[0], mlModel(41, theta3)[0])
+if mlModel(41, theta3)[0] > mlModel(41, theta)[0]:
+  print("Range", mlModel(41, theta)[0], mlModel(41, theta3)[0])
+else:
+  print("Range", mlModel(41, theta3)[0], mlModel(41, theta)[0])
 
 todayDate = datetime.datetime.now()
 todayDate = str(todayDate)[0:10]
@@ -236,7 +239,7 @@ cur.execute("SELECT * from cases ORDER BY date DESC LIMIT 1")
 data = cur.fetchall()
 lastDate = str(data[0][0])
 
-if props["dbOperations"] == true:
+if props["dbOperations"] == "true":
   ratio = last40DayCases[-1]/data[0][1]
   if ratio > 1:
       ratio = 1/ratio
