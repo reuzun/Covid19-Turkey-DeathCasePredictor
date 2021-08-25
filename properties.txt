@@ -1,0 +1,22 @@
+-- Database props
+host = localhost
+user = root
+password = 
+db = covid19deathcases
+
+-- Chrome Driver
+path = C:\Users\Efe\Desktop\a\chromedriver92.exe
+
+-- Enable/Disable plotting the linear regression lines
+plot = false
+
+-- Select the prediction machine
+-- 1 minimize cost of last 40 day
+-- 2 minimize cost of last 20 day
+-- 3 minimize cost of last 10 day
+-- Default value : 2
+machine = 2
+
+-- Database operations to save.
+dbOperations = false
+
