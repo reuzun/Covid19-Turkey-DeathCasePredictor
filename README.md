@@ -5,7 +5,7 @@ This is a project that does below list :
 
 **2.** Creates a function using these 4 regression lines. (E.g F(x) = line1(x) * 0.2 + line2(x) * 0.2 + line3(x) * 0.6 + line4(x) * -0.1) No need for sum of coefficients to equal 1.
 
-**3.** Minimizes cost function of that function due to last 40, 20, 10 day. 
+**3.** Minimizes cost function of that function due to last 40, 20, 10 day. Using gradient descent algorithm.
 
 **4.** Predicts next days values as minimized function which is minimized for last 20 days according to cost. (You can change it from properties.txt)
 
