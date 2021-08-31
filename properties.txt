@@ -8,15 +8,15 @@ db = covid19deathcases
 path = C:\Users\Efe\Desktop\a\chromedriver92.exe
 
 -- Enable/Disable plotting the linear regression lines
-plot = false
+plot = true
 
 -- Select the prediction machine
 -- 1 minimize cost of last 40 day
 -- 2 minimize cost of last 20 day
 -- 3 minimize cost of last 10 day
--- Default value : 2
-machine = 2
+-- Default value : 0 to select less tolerance machine
+machine = 0
 
 -- Database operations to save.
-dbOperations = false
+dbOperations = true
 

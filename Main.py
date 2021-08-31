@@ -97,22 +97,14 @@ for line in lines:
         tokens = line.split("=")
         props[tokens[0]] = tokens[1]
 
-
-mydb = mysql.connector.connect(
-  host=""+props["host"],
-  user=""+props["user"],
-  password=""+props["password"],
-  db=""+props["db"]
-)
-cur = mydb.cursor()
-
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument('--headless')
-chrome_options.add_argument('--no-sandbox')
-chrome_options.add_argument('--disable-dev-shm-usage')
+from selenium.webdriver.chrome.options import Options
+options = Options()
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
 figure(figsize=(12, 6), dpi=80)
 
-wd = webdriver.Chrome(executable_path=r""+props["path"],chrome_options=chrome_options)
+wd = webdriver.Chrome(executable_path=r""+props["path"],options=options)
 wd.get("https://covid19.saglik.gov.tr/TR-66935/genel-koronavirus-tablosu.html")
 
 
@@ -222,39 +214,62 @@ print("Tolerance :", Jhistory3[-1] )
 print("Machine guess for next announcement : ", mlModel(41, theta3)[0] )
 print()
 
-predictionTheta = theta2
-if props["machine"] == 1:
+predictionTheta = None
+cur = None
+props["machine"] = int(props["machine"])
+if props["machine"] == 0:
+  if Jhistory[-1] < Jhistory2[-1] and jHistory[-1] < Jhistory3[-1]:
+    predictionTheta = theta
+  elif Jhistory2[-1] < Jhistory[-1] and Jhistory2[-1] < Jhistory3[-1]:
+    predictionTheta = theta2
+  else:
+    predictionTheta = theta3
+elif props["machine"] == 1:
   predictionTheta = theta
+elif props["machine"] == 2:
+  predictionTheta = theta2
 elif props["machine"] == 3:
   predictionTheta = theta3
 else:
-  pass
+  raise ValueError('machine value is not set correctly in properties.txt.')
+  
 print("Prediction: ", mlModel(41, predictionTheta)[0])
-if mlModel(41, theta3)[0] > mlModel(41, theta)[0]:
-  print("Range", mlModel(41, theta)[0], mlModel(41, theta3)[0])
-else:
-  print("Range", mlModel(41, theta3)[0], mlModel(41, theta)[0])
-
-todayDate = datetime.datetime.now()
-todayDate = str(todayDate)[0:10]
-
-cur.execute("SELECT * from cases ORDER BY date DESC LIMIT 1")
-data = cur.fetchall()
-lastDate = str(data[0][0])
+#if mlModel(41, theta3)[0] > mlModel(41, theta)[0]:
+#  print("Range", mlModel(41, theta)[0], mlModel(41, theta3)[0])
+#else:
+#  print("Range", mlModel(41, theta3)[0], mlModel(41, theta)[0])
 
 if props["dbOperations"] == "true":
-  ratio = last40DayCases[-1]/data[0][1]
-  if ratio > 1:
+  try:
+    mydb = mysql.connector.connect(
+    host=""+props["host"],
+    user=""+props["user"],
+    password=""+props["password"],
+    db=""+props["db"]
+    )
+    cur = mydb.cursor()
+    todayDate = datetime.datetime.now()
+    todayDate = str(todayDate)[0:10]
+    cur.execute("SELECT * from cases ORDER BY date DESC LIMIT 1")
+    data = cur.fetchall()
+    lastDate = str(data[0][0])
+    ratio = last40DayCases[-1]/data[0][1]
+    if ratio > 1:
       ratio = 1/ratio
-
-  if not lastDate == todayDate and not data[0][1] == mlModel(41, predictionTheta)[0]:
+    if not lastDate == todayDate and not data[0][1] == mlModel(41, predictionTheta)[0]:
       cur.execute("UPDATE cases SET realValue = " + str(last40DayCases[-1]) +" , succesRatio = " + str(ratio) + " WHERE date = " + ' "'+ lastDate + '"')
       cur.execute("INSERT INTO `cases` (`date`, `predictedValue`, `realValue`, `succesRatio`) VALUES (NOW(), " + str(mlModel(41, predictionTheta)[0]) + ", DEFAULT, DEFAULT)")
-  else:
+    else:
       pass #print("Nothing is done due to not new data has arrived!")
-    
-mydb.commit()
-mydb.close()
+    mydb.commit()
+    mydb.close()
+  except:
+    print("Check your database!")
+
+
+
 wd.close() #Endpoint of program.
+wd.quit()
+
 if(props["plot"] == "true"):
   plt.show()
