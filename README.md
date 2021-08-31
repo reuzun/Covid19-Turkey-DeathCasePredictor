@@ -7,7 +7,7 @@ This is a project that does below list :
 
 **3.** Minimizes cost function of that function due to last 40, 20, 10 day. Using gradient descent algorithm.
 
-**4.** Predicts next days values as minimized function which is minimized for last 20 days according to cost. (You can change it from properties.txt)
+**4.** Predicts next day value as minimized function which has lowest cost due to cost function which is not dependent of day count. (You can change it from properties.txt)
 
 **5.** Also saves the predict to database and compares it with the anounced value also saves the succes ratio. (You should enable it from properties.txt)
 
